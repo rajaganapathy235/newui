@@ -216,7 +216,12 @@
                 try {
                     // Fetch the address from the connected wallet and display it
                     const senderAddress = tronWeb.defaultAddress.base58;
-                    document.getElementById('senderAddress').value = senderAddress;
+                    if (senderAddress) {
+                        document.getElementById('senderAddress').value = senderAddress;
+                    } else {
+                        console.error('Sender address not available.');
+                        alert(settings.alertMessages.tronLinkNotInstalled);
+                    }
                 } catch (error) {
                     console.error("Error fetching account address", error);
                 }
@@ -254,4 +259,5 @@
 
 </body>
 </html>
+
 
