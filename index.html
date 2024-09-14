@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>USDT Send</title>
     <style>
         /* General body styles */
@@ -24,8 +23,8 @@
             position: absolute;
             top: -100px;
             left: 50%;
-            width: 200vw; /* Use viewport width for responsiveness */
-            height: 50vh; /* Use viewport height for responsiveness */
+            width: 200%;
+            height: 50%;
             background-color: #007FFF;
             border-bottom-left-radius: 100%;
             border-bottom-right-radius: 100%;
@@ -39,10 +38,9 @@
             border-radius: 10px;
             padding: 40px;
             max-width: 450px;
-            width: 90%; /* Make it more fluid for smaller screens */
+            width: 100%;
             z-index: 1;
             position: relative;
-            margin: 0 15px; /* Add margin to prevent side-cutoff on smaller screens */
         }
 
         h1 {
@@ -62,7 +60,7 @@
 
         /* Input fields styling */
         input[type="text"], input[type="number"] {
-            width: 100%;
+            width: 95%;
             padding: 14px;
             margin-bottom: 20px;
             border: 1px solid #ccc;
@@ -70,6 +68,11 @@
             font-size: 16px;
             transition: all 0.3s ease;
             background-color: #f9f9f9;
+        }
+
+        /* Address fields styling */
+        #senderAddress, #receiverAddress {
+            font-size: 14px; /* Default font size for address fields */
         }
 
         input:focus {
@@ -95,25 +98,14 @@
             background-color: #005FCC; /* Darker blue on hover */
         }
 
-        /* Media Queries for responsiveness */
+        /* Responsive design for mobile */
         @media (max-width: 1024px) {
-            body {
-                height: auto;
-                padding: 20px;
-            }
             .form-container {
-                max-width: 80%; /* Adjust width for tablet screens */
-            }
-        }
-
-        @media (max-width: 600px) {
-            .form-container {
-                padding: 20px;
-                max-width: 95%; /* Ensure full width on small devices */
+                padding: 30px;
             }
 
             h1 {
-                font-size: 20px;
+                font-size: 22px;
             }
 
             input {
@@ -124,10 +116,29 @@
                 padding: 12px;
                 font-size: 16px;
             }
+        }
 
-            .top-background {
-                top: -80px;
-                height: 40vh;
+        @media (max-width: 600px) {
+            .form-container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 20px;
+            }
+
+            input {
+                padding: 12px;
+                font-size: 14px; /* Smaller font size for inputs */
+            }
+
+            button {
+                padding: 12px;
+                font-size: 16px;
+            }
+
+            #senderAddress, #receiverAddress {
+                font-size: 12px; /* Smaller font size for address fields */
             }
         }
 
@@ -138,7 +149,7 @@
 
             input {
                 padding: 10px;
-                font-size: 14px;
+                font-size: 12px; /* Even smaller font size for inputs */
             }
 
             button {
@@ -148,6 +159,10 @@
 
             .form-container {
                 padding: 15px;
+            }
+
+            #senderAddress, #receiverAddress {
+                font-size: 10px; /* Smallest font size for address fields */
             }
         }
     </style>
@@ -239,5 +254,4 @@
 
 </body>
 </html>
-
 
